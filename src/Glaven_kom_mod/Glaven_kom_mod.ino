@@ -3,16 +3,20 @@
 
 #define hod_svetl 3
 #define sirena 4
-#define zadna_P A0
-#define predna_p A1
-#define osvob_rudan 5
-#define rudan 6
-#define kot_svetl 7
+#define zadna_p A0
+#define kot_svetl A1
+#define predna_p 5
+#define osvob_rudan 6
+#define rudan 7
+
+#define KM_ID "SZ1265"
+#define code_on "0xABC"
+#define code_off "0xABD"
 
 const int inputPins[] = {
   hod_svetl,
   sirena,
-  zadna_P,
+  zadna_p,
   predna_p,
   osvob_rudan,
   rudan,
@@ -26,10 +30,10 @@ void setup() {
   Serial.begin(112500);
   
   for (int i = 0; i < sizeof(inputPins) / sizeof(inputPins[0]); i++) {
-    pinMode(inputPins[i], INPUT);
+    pinMode(inputPins[i], INPUT_PULLUP);
   }
 
-  if(!LoRa.begin(433000000)){
+  if(!LoRa.begin(433E6)){
       Serial.println("LoRa transmitter not working");
   }
   LoRa.setSpreadingFactor(7);
@@ -52,8 +56,8 @@ void loop() {
         case sirena:
           data_handler("sirena", currentState);
           break;
-        case zadna_P:
-          data_handler("zadna_P", currentState);
+        case zadna_p:
+          data_handler("zadna_p", currentState);
           break;
         case predna_p:
           data_handler("predna_p", currentState);
@@ -71,14 +75,14 @@ void loop() {
     }
   }
 }
-void data_handler(String my_component, bool my_command){
-  String my_json = "{";
-  my_json += "\"my_ID\":" + "KM_0x2C7" + ",";
-  my_json += "\" my_component\":" + my_name + ",";
-  my_json += "\"command\":" + String(my_command);
-  my_json += "}";
-
+void data_handler(String my_component, bool my_state){
+  String my_command = KM_ID+my_component;
+  if(my_state == 1){
+    my_command+=code_on;
+  }else{
+    my_command+=code_off;
+  }
   LoRa.beginPacket();      
-  LoRa.print(my_json);  
+  LoRa.print(my_command);  
   LoRa.endPacket();   
 }

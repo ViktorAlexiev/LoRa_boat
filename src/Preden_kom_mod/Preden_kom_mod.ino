@@ -4,18 +4,18 @@
 #include <ArduinoJson.h>
 
 #define predna_P 3
-#define osvob_rudan 4
-#define rudan A0
+#define rudan_R A0
+#define rudan_B 4
 
 const int inputPins[] = {
-  osvob_rudan,
-  rudan,
-  predna_P
+  predna_P,
+  rudan_R,
+  rudan_B,
 };
 
 #define KM_ID "SZ1265"
-#define code_on "0xABC"
-#define code_off "0xABD"
+#define code_on "on1947"
+#define code_off "off1947"
 
 void setup() {
   Serial.begin(115200);
@@ -64,25 +64,20 @@ int handle_receive() {
     }
 
     Serial.println(command);
-
-    if (command == "rudan0xABC") {
-      digitalWrite(rudan, HIGH);
-    } else if (command == "rudan0xABD") {
-      digitalWrite(rudan, LOW);
+    
+    if (command == "rudanon1947") {    
+        digitalWrite(rudan_R, HIGH);
+        digitalWrite(rudan_B, HIGH);
+    } else if (command == "rudanoff1947") {
+        digitalWrite(rudan_R, LOW);
+        digitalWrite(rudan_B, LOW);
     }
 
-    else if (command == "osvob_rudan0xABC") {
-      digitalWrite(osvob_rudan, HIGH);
-    } else if (command == "osvob_rudan0xABD") {
-      digitalWrite(osvob_rudan, LOW);
-    }
-
-    else if (command == "predna_p0xABC") {
+    else if (command == "predna_pon1947") {
       digitalWrite(predna_P, HIGH);
-    } else if (command == "predna_p0xABD") {
+    } else if (command == "predna_poff1947") {
       digitalWrite(predna_P, LOW);
     }
-
     else {
       return 1;
     }

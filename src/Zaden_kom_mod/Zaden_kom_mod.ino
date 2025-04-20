@@ -3,22 +3,20 @@
 #include <LoRa.h>
 #include <ArduinoJson.h>
 
-#define hod_svetl 3
+#define hod_svetl A0
 #define sirena 4
-#define zadna_p A0
-#define kot_svetl A1
+#define zadna_p 3
 
 
 const int inputPins[] = {
   hod_svetl,
   sirena,
   zadna_p,
-  kot_svetl
 };
 
 #define KM_ID "SZ1265"
-#define code_on "0xABC"
-#define code_off "0xABD"
+#define code_on "on1947"
+#define code_off "off1947"
 
 void setup() {
   Serial.begin(115200);
@@ -68,29 +66,24 @@ int handle_recieve(){
 
     Serial.println(command);
 
-    if (command == "hod_svetl0xABC") {
+    if (command == "hod_svetlon1947") {
       digitalWrite(hod_svetl, HIGH);
-    } else if (command == "hod_svetl0xABD") {
+    } else if (command == "hod_svetloff1947") {
       digitalWrite(hod_svetl, LOW);
     }
   
-    else if (command == "sirena0xABC") {
+    else if (command == "sirenaon1947") {
       digitalWrite(sirena, HIGH);
-    } else if (command == "sirena0xABD") {
+    } else if (command == "sirenaoff1947") {
       digitalWrite(sirena, LOW);
     }
   
-    else if (command == "zadna_p0xABC") {
+    else if (command == "zadna_pon1947") {
       digitalWrite(zadna_p, HIGH);
-    } else if (command == "zadna_p0xABD") {
+    } else if (command == "zadna_poff1947") {
       digitalWrite(zadna_p, LOW);
     }
   
-    else if (command == "kot_svetl0xABC") {
-      digitalWrite(kot_svetl, HIGH);
-    } else if (command == "kot_svetl0xABD") {
-      digitalWrite(kot_svetl, LOW);
-    }
     else {
       return 1;
     }

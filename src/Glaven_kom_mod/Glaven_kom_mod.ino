@@ -4,27 +4,27 @@
 #define hod_svetl 3
 #define sirena 4
 #define zadna_p A0
-#define kot_svetl A1
-#define predna_p 5
-#define osvob_rudan 6
-#define rudan 7
+#define predna_p A1
+#define rudan 6
+#define rudan_allow 5
+#define led_pin 7
+
+
 
 #define KM_ID "SZ1265"
-#define code_on "0xABC"
-#define code_off "0xABD"
+#define code_on "on1947"
+#define code_off "off1947"
 
 const int inputPins[] = {
   hod_svetl,
   sirena,
   zadna_p,
   predna_p,
-  osvob_rudan,
   rudan,
-  kot_svetl
+  rudan_allow
 };
 
 bool lastStates[sizeof(inputPins) / sizeof(inputPins[0])] = {0};
-
 
 void setup() {
   Serial.begin(112500);
@@ -33,6 +33,10 @@ void setup() {
     pinMode(inputPins[i], INPUT_PULLUP);
   }
 
+  pinMode(led_pin, OUTPUT);
+    
+  
+
   if(!LoRa.begin(433E6)){
       Serial.println("LoRa transmitter not working");
   }
@@ -40,8 +44,10 @@ void setup() {
   LoRa.setSignalBandwidth(125E3);
   LoRa.setCodingRate4(5);
   LoRa.enableCrc();
+  
 }
 void loop() {
+  
   for (int i = 0; i < sizeof(inputPins) / sizeof(inputPins[0]); i++) {
     int pin = inputPins[i];
     bool currentState = digitalRead(pin);
@@ -51,26 +57,34 @@ void loop() {
 
       switch (pin) {
         case hod_svetl:
-          data_handler("hod_svetl", currentState);
+          data_handler("hod_svetl", !currentState);
           break;
         case sirena:
-          data_handler("sirena", currentState);
+          data_handler("sirena", !currentState);
           break;
         case zadna_p:
-          data_handler("zadna_p", currentState);
+          data_handler("zadna_p", !currentState);
           break;
         case predna_p:
-          data_handler("predna_p", currentState);
+          data_handler("predna_p", !currentState);
           break;
-        case osvob_rudan:
-          data_handler("osvob_rudan", currentState);
+        case rudan_allow:
+          if(!digitalRead(rudan_allow) == 0){
+            data_handler("rudan", 0);
+            digitalWrite(led_pin, LOW);
+          }else{
+            digitalWrite(led_pin, HIGH);
+          }
           break;
         case rudan:
-          data_handler("rudan", currentState);
+          if(!digitalRead(rudan_allow) == 0){
+            data_handler("rudan", 0);
+          }else{
+            data_handler("rudan", !currentState);
+          }
           break;
-        case kot_svetl:
-          data_handler("kot_svetl", currentState);
-          break;
+        
+        
       }
     }
   }
